@@ -24,7 +24,7 @@ const load = key => {
 
 function setSavedTime() {
   const timeObj = load('videoplayer-current-time');
-  player.setCurrentTime(timeObj.seconds);
+  if (timeObj) player.setCurrentTime(timeObj.seconds);
 }
 
 player.on(
@@ -33,3 +33,5 @@ player.on(
 );
 
 document.addEventListener('DOMContentLoaded', setSavedTime);
+
+export { save, load };
