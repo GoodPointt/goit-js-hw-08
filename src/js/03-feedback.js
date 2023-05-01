@@ -2,34 +2,31 @@ import throttle from 'lodash.throttle';
 import { save, load } from './storage.js';
 
 const form = document.querySelector('.feedback-form');
+const FORM_STORAGE_KEY = 'feedback-form-state';
+let formData = {};
 
-const handleInput = () => {
-  const email = form.email.value;
-  const message = form.message.value;
-  save('feedback-form-state', { email, message });
+const handleInput = e => {
+  formData[e.target.name] = e.target.value.trim();
+  save(FORM_STORAGE_KEY, formData);
 };
 
 const fillForm = () => {
-  const formData = load('feedback-form-state');
+  const newFormData = load(FORM_STORAGE_KEY);
 
-  if (formData) {
-    form.email.value = formData.email;
-    form.message.value = formData.message;
-  }
+  if (!newFormData) return;
+  formData = newFormData;
+  Object.entries(formData).forEach(([key, value]) => {
+    form.elements[key].value = value;
+  });
 };
 
 const handleSubmit = event => {
   event.preventDefault();
+  console.log(formData);
 
-  const email = form.email.value;
-  const message = form.message.value;
-
-  localStorage.removeItem('feedback-form-state');
-
-  form.email.value = '';
-  form.message.value = '';
-
-  console.log({ email, message });
+  localStorage.removeItem(FORM_STORAGE_KEY);
+  formData = {};
+  form.reset();
 };
 
 form.addEventListener('input', throttle(handleInput, 500));
